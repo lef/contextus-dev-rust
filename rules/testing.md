@@ -1,5 +1,47 @@
 # Rust Testing
 
+## TDD: Follow t_wada's Approach
+
+When instructing Claude to do TDD, say **"t_wada の推奨する進め方に従って"**.
+Person names dramatically improve Claude's instruction-following accuracy.
+Ref: https://memory-lovers.blog/entry/2025/06/27/102550
+
+### RED → GREEN → REFACTOR in Rust
+
+Rust has **two kinds of RED**:
+
+1. **Compile RED** — the code doesn't compile yet (`cargo test --no-run`)
+2. **Test RED** — compiles but test fails (`cargo test`)
+
+Both are valid RED. Start with whichever is closer to the intent.
+
+```bash
+cargo test --no-run   # confirm compile RED (fastest feedback)
+cargo test            # confirm test RED
+```
+
+**Rules**:
+- Write the failing test first — never write implementation before a failing test exists
+- One failing test at a time
+- Write the minimum code to pass — resist over-implementing
+- Refactor only on GREEN — never refactor on RED
+- Prefer `Result`-returning tests over `#[should_panic]` — more composable
+
+```rust
+// Prefer this (t_wada style)
+#[test]
+fn test_parse_host_with_port() -> Result<(), Box<dyn std::error::Error>> {
+    let host = parse_host("example.com:443")?;
+    assert_eq!(host.as_str(), "example.com");
+    Ok(())
+}
+
+// Over this
+#[test]
+#[should_panic]
+fn test_parse_host_panics() { ... }
+```
+
 ## File Structure
 
 ```

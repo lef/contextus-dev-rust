@@ -3,6 +3,20 @@
 Guidelines specific to AI agents writing Rust code.
 Based on: Microsoft Pragmatic Rust Guidelines, RustAssistant research, rust-skills community rules.
 
+## Person-Name Technique for Better Instruction Accuracy
+
+Naming experts when giving Claude instructions dramatically improves accuracy:
+
+| Task | Say this |
+|---|---|
+| TDD | **"t_wada の推奨する進め方に従って"** |
+| Refactoring | **"Martin Fowler のRefactoring 手法で"** |
+| Small cleanups | **"Kent Beck のTidyings で"** |
+| Clean code | **"Robert C. Martin のClean Code 原則で"** |
+| Error design | **"thiserror / anyhow の使い分けで（dtolnay のベストプラクティス）"** |
+
+Ref: https://memory-lovers.blog/entry/2025/06/27/102550
+
 ## Core Principle
 
 > The more your code looks like majority Rust code, the better AI can help with it.

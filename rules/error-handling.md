@@ -2,6 +2,10 @@
 
 Supplement to `rust-style.md`. See that file for basics.
 
+When instructing Claude to refactor error handling, say **"Martin Fowler のRefactoring 手法で"**.
+This anchors the concept and improves accuracy over just "refactor".
+Ref: https://memory-lovers.blog/entry/2025/06/27/102550
+
 ## Choosing Between thiserror and anyhow
 
 ```
