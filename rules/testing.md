@@ -1,17 +1,5 @@
 # Rust Testing
 
-## HARD RULE: RED Before Implementation
-
-**実装を書く前に失敗するテストがなければ、実装してはならない。**
-
-実装を求められたとき、まずテストが存在するか確認する。なければ:
-1. ユーザーに「まずテストを書きます」と伝える
-2. 失敗するテストを書く（Compile RED または Test RED）
-3. `cargo test --no-run` または `cargo test` で失敗を確認する
-4. そのあとで実装する
-
-「小さい変更だから」「急いでいるから」はこのルールの例外にならない。
-
 ## TDD: Follow t_wada's Approach
 
 When instructing Claude to do TDD, say **"t_wada の推奨する進め方に従って"**.
