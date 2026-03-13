@@ -3,6 +3,18 @@
 Guidelines specific to AI agents writing Rust code.
 Based on: Microsoft Pragmatic Rust Guidelines, RustAssistant research, rust-skills community rules.
 
+## Model Switching for Rust Code
+
+**.rs ファイルを編集する前に、より高性能なモデル（Opus 等）への切り替えを確認する。**
+
+- Rust コードを書く必要が生じたら：**ユーザーにモデル切り替えを提案してから**実装を開始する
+- Rust コードが不要になったら（設計・文書・shell 作業に戻る場合など）：**その旨をユーザーに伝える**（コストの高いモデルを使い続けるのを防ぐ）
+
+```
+Rust コード作業前: "Rust のコードを書きます。モデルを Opus に切り替えますか？"
+Rust コード作業後: "Rust コードの作業が終わりました。モデルを戻せます。"
+```
+
 ## Person-Name Technique for Better Instruction Accuracy
 
 Naming experts when giving Claude instructions dramatically improves accuracy:
