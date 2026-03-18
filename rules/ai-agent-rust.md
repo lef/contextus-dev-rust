@@ -5,15 +5,13 @@ Based on: Microsoft Pragmatic Rust Guidelines, RustAssistant research, rust-skil
 
 ## Model Switching for Rust Code
 
-**.rs ファイルを編集する前に、より高性能なモデル（Opus 等）への切り替えを確認する。**
+> **2026-03-18 更新**: Opus 4.6 (1M context) の登場により、Rust 開発時のモデル切り替えは
+> 基本的に不要になった。1M context で Rust コードの読み書きに十分な能力がある。
+> コスト最適化が必要な場合のみ、以下のルールを適用する。
 
+コスト最適化モード（オプション）:
 - Rust コードを書く必要が生じたら：**ユーザーにモデル切り替えを提案してから**実装を開始する
-- Rust コードが不要になったら（設計・文書・shell 作業に戻る場合など）：**その旨をユーザーに伝える**（コストの高いモデルを使い続けるのを防ぐ）
-
-```
-Rust コード作業前: "Rust のコードを書きます。モデルを Opus に切り替えますか？"
-Rust コード作業後: "Rust コードの作業が終わりました。モデルを戻せます。"
-```
+- Rust コードが不要になったら：**その旨をユーザーに伝える**
 
 ## Person-Name Technique for Better Instruction Accuracy
 
