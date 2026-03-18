@@ -1,0 +1,6 @@
+# Rust 開発に必要な apt パッケージ
+# tutus の PROFILE 機構で自動適用される（将来）
+# 現状は手動: make sandbox-apt P=<dir> PKG="gcc libc-dev"
+
+gcc        # Cargo build scripts が cc を要求（Rust 1.86+ で不要になる見込み）
+libc-dev   # C ヘッダ（gcc に必要）
