@@ -1,0 +1,4 @@
+# workflow-guard: ガード対象の拡張子（L3 dev-rust profile）
+# 1行1拡張子。ここに書かれた拡張子のファイルは、テスト変更なしに Edit/Write できない。
+rs
+Makefile
