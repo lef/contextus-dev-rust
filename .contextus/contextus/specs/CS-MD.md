@@ -1,10 +1,13 @@
+---
+Type: SPEC
+Version: 0.1.0
+Updated: 2026-03-21
+Status: draft
+Provenance: L0/contextus
+---
+
 # CS-MD: Contextus Structured Markdown
 
-> Type: SPEC
-> Version: 0.1.0
-> Updated: 2026-03-21
-> Status: draft
-> Provenance: L0/contextus
 
 ## Abstract
 
@@ -71,11 +74,11 @@ still render the document normally (graceful degradation).
 HTML  + microformats (2004) = structured HTML (class="vcard")
 HTML  + microdata (2009)    = structured HTML (itemscope, itemprop)
 HTML  + JSON-LD             = structured HTML (<script type="application/ld+json">)
-Markdown + CS-MD (2026)     = structured Markdown (> Type:, ## Task)
+Markdown + CS-MD (2026)     = structured Markdown (YAML frontmatter, ## Task)
 ```
 
-Any markdown file can become a CS-MD document by adding `> Type:`.
-CS-MD is not limited to Structured Flow documents.
+Any markdown file can become a CS-MD document by adding a YAML frontmatter
+block with `Type:`. CS-MD is not limited to Structured Flow documents.
 README, AGENTS.md, rule files — all can be CS-MD if they opt in.
 
 ### Why Self-Containment Matters for LLMs
@@ -152,14 +155,21 @@ CS-MD uses a **safe subset** of markdown that is believed to be unambiguous.
 
 | CS-MD uses | Ambiguous? | Why safe |
 |---|---|---|
+| `---` (YAML frontmatter) | Edge case | File-start-only rule. All major tools agree. See below |
 | `# Title` (H1) | No | One per document, first heading |
-| `> key: value` (blockquote) | No | grep `'^>'` — no parser needed |
 | `## Section` (H2) | No | Flat structure, no nesting |
 | `- item` (list) | Edge cases exist | CS-MD uses simple flat lists only |
 | `[text](path)` (link) | No | Standard syntax, well-defined |
+| `> text` (blockquote) | No | Used only for quotations in body. NOT for metadata |
 
 CS-MD avoids: deeply nested lists, indentation-sensitive constructs,
 HTML-in-markdown, complex table formatting, and other ambiguous areas.
+
+**YAML frontmatter `---` ambiguity**: `---` is also a CommonMark thematic break.
+The industry consensus (GitHub, Obsidian, Hugo, Jekyll, VitePress, and all major
+tools) is: `---` at the very start of a file = frontmatter; `---` elsewhere = thematic
+break. CS-MD follows this convention. Closing `---` MAY be replaced with `...`
+(YAML document end marker) for parsers that need disambiguation.
 
 **The design principle**: use markdown because LLMs already know it,
 but restrict to the subset that is unambiguous and grep-parseable.
@@ -168,8 +178,8 @@ Do not depend on a markdown parser for CS-MD header extraction.
 #### Visible metadata
 
 Unlike HTML's `<meta>` tags (hidden from users) or JSON-LD `<script>` blocks
-(invisible), CS-MD metadata is **visible**. `> Type: HANDOFF` renders as a
-blockquote that humans can read.
+(invisible), CS-MD metadata is **visible**. YAML frontmatter renders as a
+metadata table on GitHub and as editable Properties in Obsidian.
 
 This is a deliberate choice, not a limitation. In the world of AI-assisted work,
 **both humans and agents read the same document**. Hidden metadata creates
@@ -177,12 +187,19 @@ a split: humans see one thing, machines see another. CS-MD rejects this split.
 The metadata IS content. What agents see, humans see. What humans write,
 agents read.
 
+**Why YAML frontmatter, not blockquote `>`?** CS-MD originally used `> Key: Value`
+(blockquote) for metadata. This conflicted with standard blockquote usage for
+quotations in body text, making it impossible to distinguish metadata from quotes.
+YAML frontmatter is the de facto industry standard for markdown metadata
+(GitHub, Obsidian, Hugo, Jekyll, MADR 4.0). LLMs recognize it without
+additional instruction. The migration was made before public release (2026-03-23).
+
 #### Documents as the interface
 
 CS-MD believes that **documents are the interface between humans and AI agents**.
 Not APIs. Not tool calls. Not chat messages. Documents.
 
-- A HANDOFF.md is how an agent tells the next agent (or human) what happened
+- A HANDOFF.md (Type: CONTEXT) is how an agent tells the next agent (or human) what happened
 - A TASK.md is how a human (or orchestrator) tells an agent what to do
 - A KNOWLEDGE.md is how discoveries persist across sessions and agents
 
@@ -217,12 +234,12 @@ they are the architectural decisions that make CS-MD work.
 
 1. **Semantic conventions on an existing format.**
    CS-MD adds meaning to standard markdown. No new syntax is invented.
-   `> Type:` is a standard blockquote. `## Task` is a standard heading.
+   YAML frontmatter is an established convention. `## Task` is a standard heading.
    The MEANING is new. The FORMAT is not. (Microformats principle, 2004.)
 
 2. **Graceful degradation.**
    A parser that does NOT understand CS-MD still renders the document normally.
-   `> Type: HANDOFF` renders as a blockquote. `## Task` renders as a heading.
+   `---` renders as a thematic break. `## Task` renders as a heading.
    Nothing breaks. Agents that don't know CS-MD read it as regular markdown.
 
 3. **Postel's Law (Jon Postel, RFC 761).**
@@ -233,12 +250,12 @@ they are the architectural decisions that make CS-MD work.
 
 4. **Registry-managed vocabulary.**
    Field names, section names, and markers are registered in a central
-   trust anchor (`registry.jsonl`). This guarantees that `> Type: HANDOFF`
+   trust anchor (`registry.jsonl`). This guarantees that `Type: CONTEXT`
    means the same thing everywhere. (IANA principle.)
 
 #### Derived
 
-- **grep/awk parseable.** No special parser required. `grep '^>' file.md` extracts all headers.
+- **grep/awk parseable.** No special parser required. `sed -n '/^---$/,/^---$/p' file.md` extracts all headers.
 - **EBP (Evidence-Based Practice).** This spec is validated by running code (dogfooding), not by reasoning.
 - **Self-describing.** Each file carries its own metadata. No external lookup needed to understand what it is.
 - **Self-contained.** Each file carries enough context for an agent to act on it without reading other files.
@@ -257,21 +274,21 @@ A CS-MD document has two layers, analogous to HTML's `<head>` and `<body>`:
 
 ```
 HTML:                          CS-MD:
-  <head>                         > Type: HANDOFF        ← metadata (header block)
-    <title>Page</title>          > Updated: 2026-03-21
-    <meta name="author"...>      > Tags: finding, mcp
-  </head>                        # Document Title       ← title (serves both roles)
-  <body>                         ## Section Name         ← content (body)
-    <h1>Page</h1>                (markdown body)
-    <p>content</p>
-  </body>
+  <head>                         ---                    ← metadata (YAML frontmatter)
+    <title>Page</title>          Type: CONTEXT
+    <meta name="author"...>      Updated: 2026-03-21
+  </head>                        Tags: finding, mcp
+  <body>                         ---
+    <h1>Page</h1>                # Document Title       ← title (serves both roles)
+    <p>content</p>               ## Section Name         ← content (body)
+  </body>                        (markdown body)
 ```
 
 **Key difference from HTML**: CS-MD metadata is **visible**.
-HTML's `<meta>` is hidden from users. CS-MD's `> key: value` renders as a
-blockquote — humans read it naturally. This is a feature, not a limitation.
-It follows from Pillar 2 (graceful degradation): the metadata IS content
-when rendered by a non-CS-MD parser.
+HTML's `<meta>` is hidden from users. CS-MD uses YAML frontmatter, which
+GitHub renders as a metadata table and Obsidian renders as editable Properties.
+Non-CS-MD renderers display `---` as thematic breaks — the document still reads
+naturally. This is graceful degradation (Pillar 2).
 
 `# Title` serves both `<title>` (metadata: document name) and `<h1>`
 (content: first heading). In markdown there is no separate head/body split,
@@ -279,41 +296,84 @@ so one element serves both roles.
 
 ### 2.2 Parts of a CS-MD Document
 
-1. **Title** (H1, exactly one)
-2. **Header** (blockquote metadata lines)
+1. **Frontmatter** (YAML metadata between `---` delimiters)
+2. **Title** (H1, exactly one)
 3. **Sections** (H2 headings, some fixed per document type)
 4. **Body** (standard markdown within sections)
 
 ```markdown
-# Document Title
+---
+Type: CONTEXT
+Updated: 2026-03-21
+---
 
-> Type: HANDOFF
-> Updated: 2026-03-21
+# Document Title
 
 ## Section Name
 (body content)
 ```
 
+### 2.3 Change History
+
+**2026-03-23: Blockquote headers → YAML frontmatter**
+
+CS-MD originally used blockquote lines (`> Key: Value`) for metadata.
+Replaced with YAML frontmatter because blockquote headers conflicted with
+standard markdown quotations in body text. If you encounter the old format:
+
+```markdown
+# Title
+
+> Type: KNOWLEDGE
+> Updated: 2026-03-21
+```
+
+Convert to YAML frontmatter:
+
+```markdown
+---
+Type: KNOWLEDGE
+Updated: 2026-03-21
+---
+
+# Title
+```
+
+**2026-03-23: Type: HANDOFF → Type: CONTEXT**
+
+HANDOFF was too specific — it only described session handoff documents.
+CLAUDE.md (project instructions), README.md, SECURITY.md are all "context
+documents" with the same structural role: information injected for a reader
+(agent or human). Like HTTP Content-Type, the Type field classifies document
+structure, not individual identity. File name provides identity.
+
+`Type: CONTEXT` covers: HANDOFF.md, CLAUDE.md, README.md, SECURITY.md, and
+any other document whose primary purpose is providing context to a reader.
+
+The field names and values are identical — only the container changed.
+During the transition period, parsers SHOULD accept both formats (Postel's Law).
+
 ## 3. Header Fields
 
-Header fields are encoded as blockquote lines (`> Key: Value`).
-They are extractable with `grep '^>' document.md`.
+Header fields are encoded as YAML frontmatter — a `Key: Value` block
+delimited by `---` at the start of the file.
+They are extractable with `sed -n '/^---$/,/^---$/p' document.md | grep ':'`.
 
 ### 3.0 Metadata Structure Spectrum
 
 Header fields have different levels of structure, analogous to HTTP headers:
 
 ```
-              HTTP header              CS-MD header
-Structured:   Content-Type: text/html  > Type: HANDOFF           ← enum, machine parses directly
-              Last-Modified: <date>    > Updated: 2026-03-21     ← ISO 8601, machine parses
-              Via: proxy1, proxy2      > Provenance: x@m:abc1234 ← identity format, machine resolves
+              HTTP header              CS-MD frontmatter field
+Structured:   Content-Type: text/html  Type: CONTEXT           ← enum, machine parses directly
+              Last-Modified: <date>    Updated: 2026-03-21     ← ISO 8601, machine parses
+              Via: proxy1, proxy2      Provenance: x@m:abc1234 ← identity format, machine resolves
 
-Semi-struct:  Accept-Language: ja,en   > Tags: finding, fetch-mcp ← comma list, grep searchable
-              Cache-Control: no-cache  > Status: draft            ← enum, but simpler
+Semi-struct:  Accept-Language: ja,en   Tags: finding, fetch-mcp ← comma list, grep searchable
+              Cache-Control: no-cache  Status: draft            ← enum, but simpler
 
-Free-form:    Server: Apache/2.4       > Context: MINUTES 2026-03-21 — fetch MCP の議論
-                                       > Description: sandbox 内から fetch MCP で URL 取得を実証
+Free-form:    Server: Apache/2.4       Context: MINUTES 2026-03-21 — fetch MCP の議論
+                                       Description: sandbox 内から fetch MCP で URL 取得を実証
 ```
 
 **Structured** fields have machine-parseable formats (enums, dates, identity syntax).
@@ -369,10 +429,11 @@ Context links a document to the discussion that produced it (provenance of reaso
 
 **Context is free-form, NOT a resolvable path.** It is metadata for humans:
 
-```markdown
-> Context: MINUTES 2026-03-21 — fetch MCP sandbox 化の議論
-> Context: Slack #arch-review 2026-03-20
-> Context: PR #42 review comments
+```yaml
+# in YAML frontmatter:
+Context: MINUTES 2026-03-21 — fetch MCP sandbox 化の議論
+Context: Slack #arch-review 2026-03-20
+Context: PR #42 review comments
 ```
 
 Machine-resolvable links to specific discussions belong in `## References`,
@@ -430,10 +491,12 @@ Tags serve a dual role: classification AND implicit document relationships.
 Documents sharing tags are implicitly related — without explicit links.
 This is **editorial judgment** (curated by human/agent), not mechanical extraction.
 
-```
-Document A: > Tags: security, gh-auth
-Document B: > Tags: security, oauth
-→ Shared tag "security" → implicitly related
+```yaml
+# Document A frontmatter:
+Tags: security, gh-auth
+# Document B frontmatter:
+Tags: security, oauth
+# → Shared tag "security" → implicitly related
 ```
 
 **Why Tags replace See-Also:**
@@ -478,7 +541,7 @@ for all registered field names.
 Constraints:   CONSTITUTION          — normative (absolute rules)
 Deliverables:  PLAN → SPEC → TODO → TASK  — Structured Flow artifacts
 References:    DRAFT ↔ KNOWLEDGE     — informative (symmetric pair)
-State:         HANDOFF               — session state (ephemeral)
+State:         CONTEXT               — agent/human context (session state, instructions, etc.)
 ```
 
 ### 4.1.1 Normative vs Informative — Requirements Gradient
@@ -492,7 +555,7 @@ This gradient determines how strictly optional fields (like References) are requ
 | **Deliverable** | TASK, TODO | Actionable. Must be executable | **SHOULD** (TASK) / MAY (TODO) | Must NOT remain in TASK |
 | **Informative** | KNOWLEDGE (individual file) | Verified facts. Trusted reference | **SHOULD** | Must NOT remain |
 | **Exploratory** | DRAFT, PLAN | Unresolved. Work in progress | **MAY** | MAY remain |
-| **Ephemeral** | HANDOFF | Session state. Short-lived | **MAY** | Must NOT remain |
+| **Ephemeral** | CONTEXT | Agent/human context. Session state, instructions | **MAY** | Must NOT remain |
 
 **Design principle**: normative documents MUST cite their sources (References).
 Informative documents SHOULD. Exploratory and ephemeral documents MAY.
@@ -505,7 +568,7 @@ type SHOULD follow this gradient.
 
 | Type | Role | MUST sections | File location |
 |---|---|---|---|
-| HANDOFF | session state | ## Task, ## Context | project root |
+| CONTEXT | agent/human context | ## Task, ## Context (optional) | project root or $FLOW_DIR |
 | TODO | backlog | phase/category H2s | $FLOW_DIR/ |
 | TASK | execution unit | ## Goal, ## Context | $FLOW_DIR/tasks/ |
 | PLAN | intent | free-form | $FLOW_DIR/ |
@@ -528,16 +591,18 @@ DRAFT and KNOWLEDGE are a symmetric pair (informative references):
 KNOWLEDGE.md serves a dual role as **human-curated index** and **quick capture inbox**.
 
 ```markdown
-# KNOWLEDGE
+---
+Type: KNOWLEDGE
+Updated: 2026-03-22
+---
 
-> Type: KNOWLEDGE
-> Updated: 2026-03-22
+# KNOWLEDGE
 
 ## Quick Notes
 - small finding here (2026-03-22)
 
 ## Entries
-- [fetch MCP e2e](knowledge/001-fetch-mcp-e2e.md) — finding
+- [fetch MCP e2e](knowledge/fetch-mcp-e2e.md) — finding
 ```
 
 - **Quick Notes**: rapid capture of small findings. CS-MD compliant (it's just body content)
@@ -572,7 +637,7 @@ No new syntax is invented. `#heading` anchors work in standard markdown.
 Internal references MUST use **file-relative paths** (standard markdown behavior).
 
 ```markdown
-From .spec/knowledge/001-fetch-mcp.md:
+From .spec/knowledge/fetch-mcp-e2e.md:
   [design-doc](../../design-doc.md#section)     ← file-relative (CORRECT)
   [design-doc](/design-doc.md)                   ← absolute (PROHIBITED)
   [design-doc](design-doc.md)                    ← git-root-relative (NON-STANDARD)
@@ -612,7 +677,7 @@ KNOWLEDGE entries fall into three classes with different stability:
 | Finding | Execute step | Low (may become stale) | Needs validity check |
 | Lesson | Record step | High (transferable) | Candidate for L0/L2 promotion |
 
-Tags SHOULD indicate the class: `> Tags: decision, ...` / `> Tags: finding, ...` / `> Tags: lesson, ...`
+Tags SHOULD indicate the class: `Tags: decision, ...` / `Tags: finding, ...` / `Tags: lesson, ...`
 
 ## 7. Domain Customization
 
@@ -631,7 +696,7 @@ CS-MD has been verified (2026-03-21) to coexist with:
 | Tool | Metadata format | Conflict |
 |---|---|---|
 | Spec Kit (GitHub) | `**Key**: value` inline | None |
-| GSD | YAML frontmatter + XML tags | None |
+| GSD | YAML frontmatter + XML tags | Same frontmatter format — fields coexist via Postel's Law |
 | OpenSpec (Fission AI) | heading patterns | None |
 | AGENTS.md (AAIF) | free-form | None |
 

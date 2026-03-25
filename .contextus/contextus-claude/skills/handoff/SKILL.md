@@ -68,6 +68,14 @@ fi
 
 5. 全 repos 同期: `/sync-repos --all` の手順を実行する。
 
+## Pre-write Checklist
+
+Before writing HANDOFF.md, check and update if needed:
+
+- [ ] **MINUTES.md**: このセッションの議題が記録されているか？ なければここで書く（rules/minutes.md 参照）
+- [ ] **DESIGN-*.md**: アーキテクチャに影響する変更があったか？ → 更新（rules/record-keeping.md 参照）
+- [ ] **PLAN.md**: Phase の進捗に変化があったか？ → 更新
+
 ## Notes
 
 - Write for your next self: assume zero context from this session

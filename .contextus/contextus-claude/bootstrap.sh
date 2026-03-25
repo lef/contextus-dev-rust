@@ -114,6 +114,17 @@ for _pair in "L0:$L0_REPO" "L1:$L1_REPO" "L2:$L2_REPO" "L3:$L3_REPO"; do
     echo ":: rules: $_level → .claude/rules/$_repo/" >&2
 done
 
+# L3 (or L2) の workflow-guard.extensions を .claude/hooks/ に配置
+# 最も specific なレイヤーの extensions を使う（L3 > L2）
+for _check in "$L3_REPO" "$L2_REPO"; do
+    [ -n "$_check" ] || continue
+    _ext="$CONTEXTUS_DIR/$_check/workflow-guard.extensions"
+    if [ -f "$_ext" ]; then
+        cp "$_ext" .claude/hooks/workflow-guard.extensions
+        break
+    fi
+done
+
 # hooks を実行可能に
 find .claude/hooks -name '*.sh' -exec chmod +x {} \;
 

@@ -70,6 +70,26 @@
             "command": "echo '[Hook] git push detected. Review the changes above.' >&2; echo '[Hook] Press Enter to continue, Ctrl+C to abort' >&2; [ -t 0 ] && read -r || true"
           }
         ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"git commit\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/cs-lint/pre-commit.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "tool == \"Write\" || tool == \"Edit\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/cs-lint/post-write.sh"
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -83,6 +103,10 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/memory-persistence/session-banner.sh"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/cs-lint/session-start.sh"
           }
         ]
       }

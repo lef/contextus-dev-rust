@@ -54,6 +54,15 @@ if [ -d "$SPEC_DIR" ] && git -C "$PROJECT_DIR" rev-parse --git-dir > /dev/null 2
     fi
 fi
 
+# MINUTES enforcement: warn if no 議題 recorded in this session
+MINUTES_FILE="${SPEC_DIR}/MINUTES.md"
+if [ -f "$MINUTES_FILE" ]; then
+    _agenda_count=$(grep -c '^### 議題' "$MINUTES_FILE" 2>/dev/null) || _agenda_count=0
+    if [ "$_agenda_count" -eq 0 ]; then
+        echo "[MINUTES] 警告: 議題が記録されていません。議論・決定があれば MINUTES.md に記録してください。" >&2
+    fi
+fi
+
 # Record [SessionEnd] to trace.log
 TRACE_FILE="${SESSIONS_DIR}/${TODAY}-trace.log"
 mkdir -p "$SESSIONS_DIR"

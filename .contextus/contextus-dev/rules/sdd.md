@@ -13,6 +13,24 @@
 This is non-negotiable. The SDD workflow exists to prevent wasted implementation effort.
 これは交渉の余地がない。SDD は実装の手戻りを防ぐために存在する。
 
+## TODO as Central Hub # TODO は中心 hub
+
+TODO.md is not just an output of the SDD flow — it receives items from multiple sources:
+TODO.md は SDD フローの出力だけではない — 複数のソースから項目が流入する:
+
+- SDD flow: PLAN → SPEC → TODO (structured decomposition / 構造化分解)
+- Dialog: human directly instructs or discusses / 人間が直接指示・対話
+- Discovery: findings during implementation → KNOWLEDGE → TODO / 実装中の発見
+- Bug reports, review feedback / バグ報告・レビュー指摘
+
+The SDD workflow below is ONE path into TODO, not the only path.
+以下の SDD ワークフローは TODO への入力経路の 1 つであり、唯一の経路ではない。
+
+**Regardless of source, every TODO item MUST have a purpose (why).**
+**入口に関わらず、全ての TODO 項目には目的（why）が必要。**
+Items without purpose are rootless — they cannot be prioritized or evaluated.
+目的のない項目は根のない木 — 優先度も完了判定もできない。
+
 ## Workflow # ワークフロー
 
 ```
@@ -36,12 +54,23 @@ This is non-negotiable. The SDD workflow exists to prevent wasted implementation
          ↓
 6. Agent writes .spec/TODO.md  (checkbox task list, with acceptance criteria)
    エージェントが .spec/TODO.md を書く（チェックボックス + 受け入れ基準）
+   - Every ## section MUST have a purpose (why) line / 全 ## セクションに目的（why）必須
+   - Every item SHOULD have a provenance marker: [SPECIFIED], [DIRECTED], or [DISCOVERED]
+     全項目に由来マーカーを SHOULD で付記する
          ↓
 7. Consistency check: SPEC ↔ TODO ↔ CONSTITUTION
    整合性チェック: SPEC ↔ TODO ↔ CONSTITUTION の矛盾がないか確認
          ↓
 8. Human confirms task list
    人間がタスクリストを承認する
+         ↓
+   ── TASK activation (see SPEC-todo-task) ──
+   ── TASK 切り出し（SPEC-todo-task 参照）──
+         ↓
+8.5 Agent cuts TASK file from TODO (self-contained execution unit)
+    エージェントが TODO から TASK ファイルを切り出す（自己完結した実行単位）
+    - Clear items → TASK immediately / 明確な項目は即 TASK
+    - Unclear items → SPEC/DESIGN first, then TASK / 不明確なら先に設計
          ↓
    ── TDD starts here (see tdd.md, anti-patterns.md) ──
    ── ここから TDD（tdd.md, anti-patterns.md 参照）──
@@ -61,6 +90,16 @@ This is non-negotiable. The SDD workflow exists to prevent wasted implementation
 12. Discoveries → .spec/KNOWLEDGE.md
     発見事項を記録する
 ```
+
+## Task Recommendation # 作業推薦
+
+When the user asks what to do next, always recommend with reasoning.
+ユーザーが次の作業を求めたとき、必ず理由付きで推薦する。
+
+- Analyze TODO dependencies and readiness / 依存関係と準備状態を分析
+- Consider recent work for continuity / 直近の作業との継続性
+- Recommend the highest-impact actionable item / 最もインパクトの高い項目を推薦
+- For thorough analysis, use `/clarify-todo-gtd-like` / 詳細分析はスキルを使う
 
 ## Deriving from Principles (Step 3) # 原則からの導出
 

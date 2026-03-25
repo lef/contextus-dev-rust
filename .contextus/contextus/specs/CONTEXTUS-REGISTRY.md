@@ -1,10 +1,13 @@
+---
+Type: SPEC
+Version: 0.1.0
+Updated: 2026-03-22
+Status: draft
+Provenance: L0/contextus
+---
+
 # CS-REGISTRY: Contextus Registry
 
-> Type: SPEC
-> Version: 0.1.0
-> Updated: 2026-03-22
-> Status: draft
-> Provenance: L0/contextus
 
 ## Abstract
 
