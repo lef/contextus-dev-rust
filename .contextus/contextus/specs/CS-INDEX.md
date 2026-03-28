@@ -1,7 +1,7 @@
 ---
 Type: SPEC
 Version: 0.1.0
-Updated: 2026-03-21
+Updated: 2026-03-21T00:00
 Status: draft
 Provenance: L0/contextus
 ---
