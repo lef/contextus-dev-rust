@@ -1,7 +1,7 @@
 ---
 Type: SPEC
 Version: 0.1.0
-Updated: 2026-03-21T00:00
+Updated: 2026-03-21T00:00+09:00
 Status: draft
 Provenance: L0/contextus
 ---
@@ -304,7 +304,7 @@ so one element serves both roles.
 ```markdown
 ---
 Type: CONTEXT
-Updated: 2026-03-21T00:00
+Updated: 2026-03-21T00:00+09:00
 ---
 
 # Document Title
@@ -333,7 +333,7 @@ Convert to YAML frontmatter:
 ```markdown
 ---
 Type: KNOWLEDGE
-Updated: 2026-03-21T00:00
+Updated: 2026-03-21T00:00+09:00
 ---
 
 # Title
